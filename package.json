@@ -1,8 +1,9 @@
 {
-  "description": "NativeScript Application",
+  "description": "NativeScript Geocoder",
+  "version": "0.0.1",
   "license": "SEE LICENSE IN <your-license-filename>",
   "readme": "NativeScript Application",
-  "repository": "<fill-your-repository-here>",
+  "repository": "https://github.com/newgerstas/nativescript-geocoder.git",
   "nativescript": {
     "id": "org.nativescript.nativescirptgeocoder"
   },
@@ -13,5 +14,11 @@
   "devDependencies": {
     "nativescript-dev-android-snapshot": "^0.*.*",
     "tns-platform-declarations": "^2.5.0"
+  },
+  "scripts": {
+    "clear": "if exist build rd build /q /s",
+    "compile": "tsc",
+    "copy" : "xcopy \"src\\*.d.ts\" \"build\" /S",
+    "build": "npm run clear && npm run build && npm run copy"
   }
 }
