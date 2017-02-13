@@ -1,5 +1,7 @@
-import { ILocation, IAddress, IRegion, Geocoder as GeocoderBase } from "nativescript-geocoder";
+import { ILocation, IAddress, IRegion, Geocoder as GeocoderBase } from ".";
 import * as utils from "utils/utils";
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/operator/map";
 
 class Address implements IAddress {
 
@@ -57,19 +59,20 @@ export class Geocoder implements GeocoderBase {
         this.android = new android.location.Geocoder(context);
     }
 
-    getByLocation(location: ILocation): Promise<Array<IAddress>> {
-        return new Promise((resolve, reject) => {
+    getByLocation(location: ILocation): Observable<Array<IAddress>> {
+        return Observable.create(observer => {
             try {
-                let addresses = this.android.getFromLocation(location.latitude, location.longitude, Geocoder.MAX_RESULTS) || [];
-                resolve(addresses.map(ad => new Address(ad)));
+                let addresses = this.android.getFromLocation(location.latitude, location.longitude, Geocoder.MAX_RESULTS);
+                observer.next(addresses || []);
+                observer.complete();
             } catch (error) {
-                reject(error);
+                observer.error(error);
             }
-        });
+        }).map(ad => new Address(ad));
     }
 
-    getByName(name: string, region?: IRegion): Promise<Array<IAddress>> {
-        return new Promise((resolve, reject) => {
+    getByName(name: string, region?: IRegion): Observable<Array<IAddress>> {
+        return Observable.create(observer => {
             try {
                 let addresses;
                 if (region) {
@@ -78,12 +81,11 @@ export class Geocoder implements GeocoderBase {
                 } else {
                     addresses = this.android.getFromLocationName(name, Geocoder.MAX_RESULTS);
                 }
-
-                addresses = addresses || [];
-                resolve(addresses.map(ad => new Address(ad)));
+                observer.next(addresses || []);
+                observer.complete();
             } catch (error) {
-                reject(error);
+                observer.error(error);
             }
-        });
+        }).map(ad => new Address(ad));
     }
 }

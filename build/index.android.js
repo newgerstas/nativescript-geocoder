@@ -1,5 +1,7 @@
 "use strict";
 var utils = require("utils/utils");
+var Observable_1 = require("rxjs/Observable");
+require("rxjs/add/operator/map");
 var Address = (function () {
     function Address(android) {
         this.android = android;
@@ -79,20 +81,20 @@ var Geocoder = (function () {
     }
     Geocoder.prototype.getByLocation = function (location) {
         var _this = this;
-        return new Promise(function (resolve, reject) {
+        return Observable_1.Observable.create(function (observer) {
             try {
                 var addresses = _this.android.getFromLocation(location.latitude, location.longitude, Geocoder.MAX_RESULTS);
-                addresses = addresses || [];
-                resolve(addresses.map(function (ad) { return new Address(ad); }));
+                observer.next(addresses || []);
+                observer.complete();
             }
             catch (error) {
-                reject(error);
+                observer.error(error);
             }
-        });
+        }).map(function (ad) { return new Address(ad); });
     };
     Geocoder.prototype.getByName = function (name, region) {
         var _this = this;
-        return new Promise(function (resolve, reject) {
+        return Observable_1.Observable.create(function (observer) {
             try {
                 var addresses = void 0;
                 if (region) {
@@ -101,13 +103,13 @@ var Geocoder = (function () {
                 else {
                     addresses = _this.android.getFromLocationName(name, Geocoder.MAX_RESULTS);
                 }
-                addresses = addresses || [];
-                resolve(addresses.map(function (ad) { return new Address(ad); }));
+                observer.next(addresses || []);
+                observer.complete();
             }
             catch (error) {
-                reject(error);
+                observer.error(error);
             }
-        });
+        }).map(function (ad) { return new Address(ad); });
     };
     return Geocoder;
 }());
