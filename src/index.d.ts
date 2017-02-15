@@ -23,7 +23,6 @@ export interface IAddress {
 }
 
 export class Geocoder {
-    constructor();
     getByLocation(location: ILocation): Observable<Array<IAddress>>;
     getByName(name: string, region?: IRegion): Observable<Array<IAddress>>;
 }

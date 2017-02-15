@@ -84,13 +84,13 @@ var Geocoder = (function () {
         return Observable_1.Observable.create(function (observer) {
             try {
                 var addresses = _this.android.getFromLocation(location.latitude, location.longitude, Geocoder.MAX_RESULTS);
-                observer.next(addresses || []);
+                observer.next(addresses);
                 observer.complete();
             }
             catch (error) {
                 observer.error(error);
             }
-        }).map(function (ad) { return new Address(ad); });
+        }).map(function (ads) { return _this.toJsArray(ads).map(function (ad) { return new Address(ad); }); });
     };
     Geocoder.prototype.getByName = function (name, region) {
         var _this = this;
@@ -103,13 +103,20 @@ var Geocoder = (function () {
                 else {
                     addresses = _this.android.getFromLocationName(name, Geocoder.MAX_RESULTS);
                 }
-                observer.next(addresses || []);
+                observer.next(addresses);
                 observer.complete();
             }
             catch (error) {
                 observer.error(error);
             }
-        }).map(function (ad) { return new Address(ad); });
+        }).map(function (ads) { return _this.toJsArray(ads).map(function (ad) { return new Address(ad); }); });
+    };
+    Geocoder.prototype.toJsArray = function (array) {
+        var output = [], count = array.size();
+        for (var i = 0; i < count; i++) {
+            output.push(array.get(i));
+        }
+        return output;
     };
     return Geocoder;
 }());
